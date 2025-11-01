@@ -7,11 +7,12 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   const navItems = [
-    { href: '/', label: 'Dashboard', icon: '📊' },
+    { href: '/menu', label: 'Main Menu', icon: '🏠' },
+    { href: '/dashboard', label: 'Dashboard', icon: '📊' },
     { href: '/donors', label: 'Donors', icon: '👥' },
     { href: '/donations', label: 'Donations', icon: '💉' },
     { href: '/inventory', label: 'Inventory', icon: '🩸' },
-    { href: '/hospitals', label: 'Hospitals', icon: '�' },
+    { href: '/hospitals', label: 'Hospitals', icon: '🏥' },
     { href: '/campaigns', label: 'Campaigns', icon: '📢' },
     { href: '/patients', label: 'Patients', icon: '🤒' },
   ];
@@ -68,17 +69,6 @@ export default function Sidebar() {
           );
         })}
       </nav>
-
-      {/* Footer with heartbeat animation - Fixed at bottom */}
-      <div className="p-6 pt-4 border-t border-red-500/30 flex-shrink-0">
-        <div className="flex items-center gap-2 mb-2">
-          <span className="text-red-300 text-xl animate-heartbeat">💝</span>
-          <span className="text-red-100/70 text-xs font-medium">Saving Lives Together</span>
-        </div>
-        <p className="text-red-100/60 text-xs">
-          © 2025 Blood Bank System
-        </p>
-      </div>
     </aside>
   );
 }

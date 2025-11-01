@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Table from '@/components/Table';
 import Modal from '@/components/Modal';
 import Toast from '@/components/Toast';
@@ -11,6 +12,7 @@ import { formatDateReadable } from '@/lib/utils';
 type ToastType = { message: string; type: 'success' | 'error' | 'info' } | null;
 
 export default function PatientsPage() {
+  const searchParams = useSearchParams();
   const [patients, setPatients] = useState<Patient[]>([]);
   const [filteredPatients, setFilteredPatients] = useState<Patient[]>([]);
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
@@ -26,7 +28,13 @@ export default function PatientsPage() {
 
   useEffect(() => {
     loadData();
-  }, []);
+    
+    // Check if action=add in URL
+    const action = searchParams.get('action');
+    if (action === 'add') {
+      setIsModalOpen(true);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     filterPatientsList();

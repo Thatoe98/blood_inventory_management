@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Sidebar from "@/components/Sidebar";
+import AuthWrapper from "@/components/AuthWrapper";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -15,12 +15,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        <div className="flex h-screen overflow-hidden bg-gray-50">
-          <Sidebar />
-          <main className="flex-1 overflow-y-auto p-8">
-            {children}
-          </main>
-        </div>
+        <AuthWrapper>
+          {children}
+        </AuthWrapper>
       </body>
     </html>
   );

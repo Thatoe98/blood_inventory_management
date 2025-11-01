@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Table from '@/components/Table';
 import Modal from '@/components/Modal';
 import Toast from '@/components/Toast';
@@ -19,6 +20,7 @@ import { formatDate, formatDateReadable } from '@/lib/utils';
 type ToastType = { message: string; type: 'success' | 'error' | 'info' } | null;
 
 export default function DonationsPage() {
+  const searchParams = useSearchParams();
   const [donations, setDonations] = useState<Donation[]>([]);
   const [donors, setDonors] = useState<DonorWithEligibility[]>([]);
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
@@ -30,7 +32,13 @@ export default function DonationsPage() {
 
   useEffect(() => {
     loadData();
-  }, []);
+    
+    // Check if action=add in URL
+    const action = searchParams.get('action');
+    if (action === 'add') {
+      setIsModalOpen(true);
+    }
+  }, [searchParams]);
 
   const loadData = async () => {
     try {

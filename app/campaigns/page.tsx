@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Table from '@/components/Table';
 import Modal from '@/components/Modal';
 import Toast from '@/components/Toast';
@@ -11,6 +12,7 @@ import { formatDate, formatDateReadable } from '@/lib/utils';
 type ToastType = { message: string; type: 'success' | 'error' | 'info' } | null;
 
 export default function CampaignsPage() {
+  const searchParams = useSearchParams();
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
   const [loading, setLoading] = useState(true);
@@ -20,7 +22,13 @@ export default function CampaignsPage() {
 
   useEffect(() => {
     loadData();
-  }, []);
+    
+    // Check if action=add in URL
+    const action = searchParams.get('action');
+    if (action === 'add') {
+      setIsModalOpen(true);
+    }
+  }, [searchParams]);
 
   const loadData = async () => {
     try {

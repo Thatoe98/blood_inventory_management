@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Table from '@/components/Table';
 import Modal from '@/components/Modal';
 import Toast from '@/components/Toast';
@@ -11,6 +12,7 @@ import { formatDate, validateEmail, validateAge } from '@/lib/utils';
 type ToastType = { message: string; type: 'success' | 'error' | 'info' } | null;
 
 export default function DonorsPage() {
+  const searchParams = useSearchParams();
   const [donors, setDonors] = useState<DonorWithEligibility[]>([]);
   const [filteredDonors, setFilteredDonors] = useState<DonorWithEligibility[]>([]);
   const [loading, setLoading] = useState(true);
@@ -25,7 +27,13 @@ export default function DonorsPage() {
 
   useEffect(() => {
     loadDonors();
-  }, []);
+    
+    // Check if action=add in URL
+    const action = searchParams.get('action');
+    if (action === 'add') {
+      setIsModalOpen(true);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     filterDonorsList();
@@ -35,7 +43,38 @@ export default function DonorsPage() {
     try {
       setLoading(true);
       const data = await fetchDonors();
-      setDonors(data);
+      
+      // Calculate eligibility and days since last donation
+      const now = new Date();
+      const processedData = data.map(donor => {
+        const donorWithEligibility: DonorWithEligibility = { ...donor } as DonorWithEligibility;
+        
+        if (donor.last_donation_date) {
+          const lastDonation = new Date(donor.last_donation_date);
+          const daysSince = Math.floor((now.getTime() - lastDonation.getTime()) / (1000 * 60 * 60 * 24));
+          donorWithEligibility.days_since_last_donation = daysSince;
+          
+          // Eligible if more than 58 days since last donation
+          donorWithEligibility.eligibility_status = daysSince > 58 ? 'Eligible' : 'Ineligible';
+          donorWithEligibility.calculated_eligibility = daysSince > 58 ? 'Eligible' : 'Deferred';
+          
+          if (daysSince <= 58) {
+            donorWithEligibility.days_until_eligible = 59 - daysSince;
+          }
+        } else {
+          // Never donated = eligible
+          donorWithEligibility.eligibility_status = 'Eligible';
+          donorWithEligibility.calculated_eligibility = 'Eligible';
+          donorWithEligibility.days_since_last_donation = undefined;
+        }
+        
+        donorWithEligibility.full_name = `${donor.first_name} ${donor.last_name}`;
+        donorWithEligibility.blood_type = `${donor.abo_group}${donor.rh_factor}`;
+        
+        return donorWithEligibility;
+      });
+      
+      setDonors(processedData);
     } catch (error) {
       showToast('Failed to load donors', 'error');
     } finally {
@@ -247,7 +286,23 @@ export default function DonorsPage() {
               render: (donor: any) => donor.blood_type || `${donor.abo_group}${donor.rh_factor}`
             },
             { key: 'phone_number', label: 'Phone' },
-            { key: 'email', label: 'Email' },
+            { 
+              key: 'last_donation_date', 
+              label: 'Last Donation',
+              render: (donor: any) => {
+                if (!donor.last_donation_date) {
+                  return <span className="text-gray-500 italic">Never donated</span>;
+                }
+                const date = new Date(donor.last_donation_date);
+                const formattedDate = date.toLocaleDateString();
+                const daysAgo = donor.days_since_last_donation;
+                return (
+                  <span>
+                    {formattedDate} <span className="text-gray-500">({daysAgo} {daysAgo === 1 ? 'day' : 'days'} ago)</span>
+                  </span>
+                );
+              }
+            },
             { key: 'city', label: 'City' },
             {
               key: 'eligibility_status',
