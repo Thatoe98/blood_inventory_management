@@ -297,6 +297,55 @@ export async function fetchInventorySummary(): Promise<InventorySummary[]> {
   return summary;
 }
 
+export async function fetchInventoryByHospital() {
+  const bloodTypes = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+  
+  const { data: inventory, error: invError } = await supabase
+    .from('inventory_with_blood_type')
+    .select('*, hospitals(hospital_id, name, phone, address, city)');
+  
+  if (invError) throw invError;
+  
+  const { data: hospitals, error: hospError } = await supabase
+    .from('hospitals')
+    .select('*')
+    .order('name');
+  
+  if (hospError) throw hospError;
+  
+  // Group inventory by hospital
+  const hospitalInventory = (hospitals || []).map(hospital => {
+    const hospitalUnits = (inventory || []).filter((item: any) => 
+      item.hospitals?.hospital_id === hospital.hospital_id
+    );
+    
+    const bloodTypeBreakdown = bloodTypes.map(bloodType => {
+      const units = hospitalUnits.filter((item: any) => item.blood_type === bloodType);
+      return {
+        blood_type: bloodType,
+        total_units: units.length,
+        available_units: units.filter((u: any) => u.status === 'Available').length,
+        reserved_units: units.filter((u: any) => u.status === 'Reserved').length,
+        expired_units: units.filter((u: any) => u.status === 'Expired').length,
+      };
+    });
+    
+    return {
+      hospital_id: hospital.hospital_id,
+      hospital_name: hospital.name,
+      hospital_phone: hospital.phone,
+      hospital_city: hospital.city,
+      hospital_address: hospital.address,
+      total_units: hospitalUnits.length,
+      available_units: hospitalUnits.filter((u: any) => u.status === 'Available').length,
+      reserved_units: hospitalUnits.filter((u: any) => u.status === 'Reserved').length,
+      blood_types: bloodTypeBreakdown,
+    };
+  });
+  
+  return hospitalInventory;
+}
+
 // ===== DASHBOARD STATS =====
 export async function getDashboardStats(): Promise<DashboardStats> {
   const [donors, donations, inventory] = await Promise.all([
