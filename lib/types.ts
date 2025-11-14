@@ -119,6 +119,37 @@ export interface InventorySummary {
   last_updated: string;
 }
 
+export interface Transfusion {
+  transfusion_id: string;
+  patient_id: string;
+  inventory_id: string;
+  hospital_id: string;
+  transfusion_date: string;
+  units_transfused: number;
+  notes?: string;
+  created_at: string;
+  patient_name?: string;
+  blood_type?: string;
+  hospital_name?: string;
+  case_no?: string;
+  patients?: {
+    first_name: string;
+    last_name: string;
+    case_no: string;
+    abo_group: string;
+    rh_factor: string;
+  };
+  hospitals?: { name: string };
+  inventory?: {
+    donations?: {
+      donors?: {
+        abo_group: string;
+        rh_factor: string;
+      };
+    };
+  };
+}
+
 export interface DashboardStats {
   totalDonors: number;
   eligibleDonors: number;

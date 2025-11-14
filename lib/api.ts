@@ -8,7 +8,8 @@ import type {
   Donation,
   Inventory,
   InventorySummary,
-  DashboardStats
+  DashboardStats,
+  Transfusion
 } from './types';
 
 // ===== DONORS =====
@@ -268,7 +269,26 @@ export async function deleteDonation(id: string) {
   if (error) throw error;
 }
 
-// ===== INVENTORY =====`nexport async function fetchInventory(): Promise<Inventory[]> {`n  const { data, error } = await supabase`n    .from('inventory_with_blood_type')`n    .select('*')`n    .order('expiry_ts', { ascending: true });`n`n  if (error) throw error;`n  return data || [];`n}`n`nexport async function updateInventory(id: string, inventoryData: Partial<Inventory>): Promise<void> {`n  const { error } = await supabase`n    .from('inventory')`n    .update(inventoryData)`n    .eq('inventory_id', id);`n`n  if (error) throw error;`n}`n
+// ===== INVENTORY =====
+export async function fetchInventory(): Promise<Inventory[]> {
+  const { data, error } = await supabase
+    .from('inventory_with_blood_type')
+    .select('*')
+    .order('expiry_ts', { ascending: true });
+
+  if (error) throw error;
+  return data || [];
+}
+
+export async function updateInventory(id: string, inventoryData: Partial<Inventory>): Promise<void> {
+  const { error } = await supabase
+    .from('inventory')
+    .update(inventoryData)
+    .eq('inventory_id', id);
+
+  if (error) throw error;
+}
+
 export async function fetchInventorySummary(): Promise<InventorySummary[]> {
   const bloodTypes = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
   const { data: inventory, error } = await supabase
@@ -351,6 +371,48 @@ export async function fetchInventoryByHospital() {
   });
   
   return hospitalInventory;
+}
+
+// ===== TRANSFUSIONS =====
+export async function fetchTransfusions(): Promise<Transfusion[]> {
+  const { data, error } = await supabase
+    .from('transfusions')
+    .select(`
+      *,
+      patients (first_name, last_name, case_no, abo_group, rh_factor),
+      hospitals (name)
+    `)
+    .order('transfusion_date', { ascending: false });
+  
+  if (error) throw error;
+  
+  return (data || []).map(transfusion => ({
+    ...transfusion,
+    patient_name: transfusion.patients ? `${transfusion.patients.first_name} ${transfusion.patients.last_name}` : 'Unknown',
+    blood_type: transfusion.patients ? `${transfusion.patients.abo_group}${transfusion.patients.rh_factor}` : 'N/A',
+    case_no: transfusion.patients?.case_no || 'N/A',
+    hospital_name: transfusion.hospitals?.name || 'N/A'
+  }));
+}
+
+export async function createTransfusion(transfusion: Partial<Transfusion>) {
+  const { data, error } = await supabase
+    .from('transfusions')
+    .insert(transfusion)
+    .select()
+    .single();
+  
+  if (error) throw error;
+  return data;
+}
+
+export async function deleteTransfusion(id: string) {
+  const { error } = await supabase
+    .from('transfusions')
+    .delete()
+    .eq('transfusion_id', id);
+  
+  if (error) throw error;
 }
 
 // ===== DASHBOARD STATS =====
