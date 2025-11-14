@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import Table from '@/components/Table';
 import Modal from '@/components/Modal';
 import Toast from '@/components/Toast';
+import DatePicker from '@/components/DatePicker';
 import { fetchDonors, createDonor, updateDonor, deleteDonor } from '@/lib/api';
 import type { Donor, DonorWithEligibility } from '@/lib/types';
 import { formatDate, validateEmail, validateAge } from '@/lib/utils';
@@ -22,6 +23,9 @@ export default function DonorsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterBloodType, setFilterBloodType] = useState('');
   const [filterEligibility, setFilterEligibility] = useState('');
+  const [filterCity, setFilterCity] = useState('');
+  const [dateOfBirth, setDateOfBirth] = useState<Date | null>(null);
+  const [lastDonationDate, setLastDonationDate] = useState<Date | null>(null);
 
   const bloodTypes = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
 
@@ -37,7 +41,7 @@ export default function DonorsPage() {
 
   useEffect(() => {
     filterDonorsList();
-  }, [searchTerm, filterBloodType, filterEligibility, donors]);
+  }, [searchTerm, filterBloodType, filterEligibility, filterCity, donors]);
 
   const loadDonors = async () => {
     try {
@@ -82,6 +86,9 @@ export default function DonorsPage() {
     }
   };
 
+  // Get unique cities from donors
+  const cities = Array.from(new Set(donors.map(d => d.city).filter(Boolean))).sort();
+
   const filterDonorsList = () => {
     let filtered = donors;
 
@@ -102,6 +109,10 @@ export default function DonorsPage() {
       filtered = filtered.filter((d) => d.eligibility_status === filterEligibility);
     }
 
+    if (filterCity) {
+      filtered = filtered.filter((d) => d.city && d.city.toLowerCase() === filterCity.toLowerCase());
+    }
+
     setFilteredDonors(filtered);
   };
 
@@ -113,11 +124,16 @@ export default function DonorsPage() {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
 
-    const lastDonationDate = formData.get('last_donation_date') as string;
+    // Validate dates
+    if (!dateOfBirth) {
+      showToast('Please select date of birth', 'error');
+      return;
+    }
+
     const donorData: any = {
       first_name: formData.get('first_name') as string,
       last_name: formData.get('last_name') as string,
-      date_of_birth: formData.get('date_of_birth') as string,
+      date_of_birth: dateOfBirth.toISOString().split('T')[0],
       sex: formData.get('sex') as string,
       phone_number: formData.get('phone_number') as string,
       email: formData.get('email') as string,
@@ -127,7 +143,7 @@ export default function DonorsPage() {
     };
 
     if (lastDonationDate) {
-      donorData.last_donation_date = lastDonationDate;
+      donorData.last_donation_date = lastDonationDate.toISOString().split('T')[0];
     }
 
     // Validation
@@ -151,6 +167,8 @@ export default function DonorsPage() {
       }
       setIsModalOpen(false);
       setEditingDonor(null);
+      setDateOfBirth(null);
+      setLastDonationDate(null);
       loadDonors();
     } catch (error) {
       showToast('Failed to save donor', 'error');
@@ -159,6 +177,8 @@ export default function DonorsPage() {
 
   const handleEdit = (donor: Donor) => {
     setEditingDonor(donor);
+    setDateOfBirth(donor.date_of_birth ? new Date(donor.date_of_birth) : null);
+    setLastDonationDate(donor.last_donation_date ? new Date(donor.last_donation_date) : null);
     setIsModalOpen(true);
   };
 
@@ -231,45 +251,63 @@ export default function DonorsPage() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white p-4 rounded-lg shadow-sm mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="bg-white p-4 rounded-lg shadow-sm mb-6">
+        {/* Search Box - Full Width */}
         <input
           type="text"
           placeholder="Search by name, email, or phone..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded"
+          className="w-full px-4 py-2 border border-gray-300 rounded mb-3"
         />
-        <select
-          value={filterBloodType}
-          onChange={(e) => setFilterBloodType(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded"
-        >
-          <option value="">All Blood Types</option>
-          {bloodTypes.map((type) => (
-            <option key={type} value={type}>
-              {type}
-            </option>
-          ))}
-        </select>
-        <select
-          value={filterEligibility}
-          onChange={(e) => setFilterEligibility(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded"
-        >
-          <option value="">All Statuses</option>
-          <option value="Eligible">Eligible</option>
-          <option value="Not Eligible">Not Eligible</option>
-        </select>
-        <button
-          onClick={() => {
-            setSearchTerm('');
-            setFilterBloodType('');
-            setFilterEligibility('');
-          }}
-          className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-        >
-          Clear Filters
-        </button>
+        
+        {/* Filter Buttons - Smaller, Below Search */}
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+          <select
+            value={filterBloodType}
+            onChange={(e) => setFilterBloodType(e.target.value)}
+            className="px-3 py-1.5 text-sm border border-gray-300 rounded"
+          >
+            <option value="">All Blood Types</option>
+            {bloodTypes.map((type) => (
+              <option key={type} value={type}>
+                {type}
+              </option>
+            ))}
+          </select>
+          <select
+            value={filterEligibility}
+            onChange={(e) => setFilterEligibility(e.target.value)}
+            className="px-3 py-1.5 text-sm border border-gray-300 rounded"
+          >
+            <option value="">All Statuses</option>
+            <option value="Eligible">Eligible</option>
+            <option value="Not Eligible">Not Eligible</option>
+          </select>
+          <select
+            value={filterCity}
+            onChange={(e) => setFilterCity(e.target.value)}
+            className="px-3 py-1.5 text-sm border border-gray-300 rounded"
+          >
+            <option value="">All Cities</option>
+            {cities.map((city) => (
+              <option key={city} value={city}>
+                {city}
+              </option>
+            ))}
+          </select>
+          <button
+            onClick={() => {
+              setSearchTerm('');
+              setFilterBloodType('');
+              setFilterEligibility('');
+              setFilterCity('');
+            }}
+            className="px-3 py-1.5 text-sm bg-gray-500 text-white rounded hover:bg-gray-600 col-span-2 md:col-span-2"
+          >
+            Clear Filters
+          </button>
+        </div>
       </div>
 
       <div className="bg-white rounded-lg shadow-sm p-6">
@@ -332,6 +370,8 @@ export default function DonorsPage() {
         onClose={() => {
           setIsModalOpen(false);
           setEditingDonor(null);
+          setDateOfBirth(null);
+          setLastDonationDate(null);
         }}
         title={editingDonor ? 'Edit Donor' : 'Add New Donor'}
       >
@@ -361,10 +401,11 @@ export default function DonorsPage() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-semibold mb-1">Date of Birth *</label>
-              <input
-                type="date"
-                name="date_of_birth"
-                defaultValue={editingDonor?.date_of_birth}
+              <DatePicker
+                selected={dateOfBirth}
+                onChange={setDateOfBirth}
+                maxDate={new Date()}
+                placeholderText="Select date of birth"
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded"
               />
@@ -446,10 +487,11 @@ export default function DonorsPage() {
           </div>
           <div>
             <label className="block text-sm font-semibold mb-1">Last Donation Date</label>
-            <input
-              type="date"
-              name="last_donation_date"
-              defaultValue={editingDonor?.last_donation_date || ''}
+            <DatePicker
+              selected={lastDonationDate}
+              onChange={setLastDonationDate}
+              maxDate={new Date()}
+              placeholderText="Select last donation date (optional)"
               className="w-full px-3 py-2 border border-gray-300 rounded"
             />
           </div>
@@ -465,6 +507,8 @@ export default function DonorsPage() {
               onClick={() => {
                 setIsModalOpen(false);
                 setEditingDonor(null);
+                setDateOfBirth(null);
+                setLastDonationDate(null);
               }}
               className="flex-1 px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500"
             >

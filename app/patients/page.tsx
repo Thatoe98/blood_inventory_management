@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import Table from '@/components/Table';
 import Modal from '@/components/Modal';
 import Toast from '@/components/Toast';
+import DatePicker from '@/components/DatePicker';
 import { fetchPatients, createPatient, updatePatient, deletePatient, fetchHospitals } from '@/lib/api';
 import type { Patient, Hospital } from '@/lib/types';
 import { formatDateReadable } from '@/lib/utils';
@@ -23,6 +24,7 @@ export default function PatientsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterBloodType, setFilterBloodType] = useState('');
   const [filterHospital, setFilterHospital] = useState('');
+  const [dateOfBirth, setDateOfBirth] = useState<Date | null>(null);
 
   const bloodTypes = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
 
@@ -85,11 +87,17 @@ export default function PatientsPage() {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
 
+    // Validate date
+    if (!dateOfBirth) {
+      showToast('Please select date of birth', 'error');
+      return;
+    }
+
     const patientData: any = {
       case_no: formData.get('case_no') as string,
       first_name: formData.get('first_name') as string,
       last_name: formData.get('last_name') as string,
-      date_of_birth: formData.get('date_of_birth') as string,
+      date_of_birth: dateOfBirth.toISOString().split('T')[0],
       sex: formData.get('sex') as string,
       abo_group: formData.get('abo_group') as string,
       rh_factor: formData.get('rh_factor') as string,
@@ -107,6 +115,7 @@ export default function PatientsPage() {
       }
       setIsModalOpen(false);
       setEditingPatient(null);
+      setDateOfBirth(null);
       loadData();
     } catch (error) {
       showToast('Failed to save patient', 'error');
@@ -115,6 +124,7 @@ export default function PatientsPage() {
 
   const handleEdit = (patient: Patient) => {
     setEditingPatient(patient);
+    setDateOfBirth(patient.date_of_birth ? new Date(patient.date_of_birth) : null);
     setIsModalOpen(true);
   };
 
@@ -231,6 +241,7 @@ export default function PatientsPage() {
         onClose={() => {
           setIsModalOpen(false);
           setEditingPatient(null);
+          setDateOfBirth(null);
         }}
         title={editingPatient ? 'Edit Patient' : 'Add New Patient'}
       >
@@ -270,10 +281,11 @@ export default function PatientsPage() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-semibold mb-1">Date of Birth *</label>
-              <input
-                type="date"
-                name="date_of_birth"
-                defaultValue={editingPatient?.date_of_birth}
+              <DatePicker
+                selected={dateOfBirth}
+                onChange={setDateOfBirth}
+                maxDate={new Date()}
+                placeholderText="Select date of birth"
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded"
               />
@@ -360,6 +372,7 @@ export default function PatientsPage() {
               onClick={() => {
                 setIsModalOpen(false);
                 setEditingPatient(null);
+                setDateOfBirth(null);
               }}
               className="flex-1 px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500"
             >

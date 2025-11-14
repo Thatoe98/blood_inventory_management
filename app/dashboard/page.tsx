@@ -47,13 +47,22 @@ export default function Dashboard() {
         return daysSince > 58;
       });
       
+      // Filter upcoming campaigns (start_date is today or in the future)
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Reset time to start of day
+      const upcomingCampaigns = campaignsData.filter(campaign => {
+        const startDate = new Date(campaign.start_date);
+        startDate.setHours(0, 0, 0, 0);
+        return startDate >= today;
+      });
+      
       setStats({
         donors: donorsData.length,
         eligibleDonors: eligibleDonors.length,
         donations: donationsData.length,
         hospitals: hospitalsData.length,
         patients: patientsData.length,
-        campaigns: campaignsData.length
+        campaigns: upcomingCampaigns.length
       });
       setDonors(donorsData);
       setDonations(donationsData);
@@ -149,7 +158,7 @@ export default function Dashboard() {
           color="purple"
         />
         <StatsCard
-          title="Active Campaigns"
+          title="Upcoming Campaigns"
           value={stats.campaigns}
           icon="📅"
           color="yellow"

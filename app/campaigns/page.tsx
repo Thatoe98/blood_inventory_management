@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import Table from '@/components/Table';
 import Modal from '@/components/Modal';
 import Toast from '@/components/Toast';
+import DatePicker from '@/components/DatePicker';
 import { fetchCampaigns, createCampaign, updateCampaign, deleteCampaign, fetchHospitals } from '@/lib/api';
 import type { Campaign, Hospital } from '@/lib/types';
 import { formatDate, formatDateReadable } from '@/lib/utils';
@@ -19,6 +20,8 @@ export default function CampaignsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null);
   const [toast, setToast] = useState<ToastType>(null);
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
 
   useEffect(() => {
     loadData();
@@ -54,19 +57,21 @@ export default function CampaignsPage() {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
 
-    const startDate = formData.get('start_date') as string;
-    const endDate = formData.get('end_date') as string;
-
     // Validate dates
-    if (new Date(endDate) < new Date(startDate)) {
+    if (!startDate || !endDate) {
+      showToast('Please select both start and end dates', 'error');
+      return;
+    }
+
+    if (endDate < startDate) {
       showToast('End date must be after start date', 'error');
       return;
     }
 
     const campaignData = {
       name: formData.get('name') as string,
-      start_date: startDate,
-      end_date: endDate,
+      start_date: startDate.toISOString().split('T')[0],
+      end_date: endDate.toISOString().split('T')[0],
       location: formData.get('location') as string,
       hospital_id: formData.get('hospital_id') as string,
     };
@@ -81,6 +86,8 @@ export default function CampaignsPage() {
       }
       setIsModalOpen(false);
       setEditingCampaign(null);
+      setStartDate(null);
+      setEndDate(null);
       loadData();
     } catch (error) {
       showToast('Failed to save campaign', 'error');
@@ -89,6 +96,8 @@ export default function CampaignsPage() {
 
   const handleEdit = (campaign: Campaign) => {
     setEditingCampaign(campaign);
+    setStartDate(campaign.start_date ? new Date(campaign.start_date) : null);
+    setEndDate(campaign.end_date ? new Date(campaign.end_date) : null);
     setIsModalOpen(true);
   };
 
@@ -160,6 +169,8 @@ export default function CampaignsPage() {
         onClose={() => {
           setIsModalOpen(false);
           setEditingCampaign(null);
+          setStartDate(null);
+          setEndDate(null);
         }}
         title={editingCampaign ? 'Edit Campaign' : 'Add New Campaign'}
       >
@@ -177,20 +188,22 @@ export default function CampaignsPage() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-semibold mb-1">Start Date *</label>
-              <input
-                type="date"
-                name="start_date"
-                defaultValue={editingCampaign?.start_date}
+              <DatePicker
+                selected={startDate}
+                onChange={setStartDate}
+                minDate={new Date()}
+                placeholderText="Select start date"
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded"
               />
             </div>
             <div>
               <label className="block text-sm font-semibold mb-1">End Date *</label>
-              <input
-                type="date"
-                name="end_date"
-                defaultValue={editingCampaign?.end_date}
+              <DatePicker
+                selected={endDate}
+                onChange={setEndDate}
+                minDate={startDate || new Date()}
+                placeholderText="Select end date"
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded"
               />
@@ -234,6 +247,8 @@ export default function CampaignsPage() {
               onClick={() => {
                 setIsModalOpen(false);
                 setEditingCampaign(null);
+                setStartDate(null);
+                setEndDate(null);
               }}
               className="flex-1 px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500"
             >

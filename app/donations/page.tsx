@@ -22,7 +22,7 @@ type ToastType = { message: string; type: 'success' | 'error' | 'info' } | null;
 export default function DonationsPage() {
   const searchParams = useSearchParams();
   const [donations, setDonations] = useState<Donation[]>([]);
-  const [donors, setDonors] = useState<DonorWithEligibility[]>([]);
+  const [donors, setDonors] = useState<Donor[]>([]);
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [loading, setLoading] = useState(true);
@@ -201,11 +201,23 @@ export default function DonationsPage() {
               className="w-full px-3 py-2 border border-gray-300 rounded"
             >
               <option value="">Select Donor</option>
-              {donors.map((donor) => (
-                <option key={donor.donor_id} value={donor.donor_id}>
-                  {donor.full_name || `${donor.first_name} ${donor.last_name}`} - {donor.blood_type} ({donor.eligibility_status})
-                </option>
-              ))}
+              {donors.map((donor) => {
+                // Calculate eligibility
+                const now = new Date();
+                let eligibilityStatus = 'Eligible';
+                if (donor.last_donation_date) {
+                  const lastDonation = new Date(donor.last_donation_date);
+                  const daysSince = Math.floor((now.getTime() - lastDonation.getTime()) / (1000 * 60 * 60 * 24));
+                  eligibilityStatus = daysSince > 58 ? 'Eligible' : 'Ineligible';
+                }
+                const bloodType = `${donor.abo_group}${donor.rh_factor}`;
+                
+                return (
+                  <option key={donor.donor_id} value={donor.donor_id}>
+                    {`${donor.first_name} ${donor.last_name}`} - {bloodType} ({eligibilityStatus})
+                  </option>
+                );
+              })}
             </select>
           </div>
           <div className="grid grid-cols-2 gap-4">

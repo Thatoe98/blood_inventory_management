@@ -12,23 +12,15 @@ import type {
 } from './types';
 
 // ===== DONORS =====
-export async function fetchDonors(): Promise<DonorWithEligibility[]> {
+export async function fetchDonors(): Promise<Donor[]> {
   const { data, error } = await supabase
-    .from('donors_with_eligibility')
+    .from('donors')
     .select('*')
     .order('created_at', { ascending: false });
   
   if (error) throw error;
   
-  return (data || []).map(donor => ({
-    ...donor,
-    full_name: `${donor.first_name} ${donor.last_name}`,
-    blood_type: `${donor.abo_group}${donor.rh_factor}`,
-    phone: donor.phone_number,
-    is_eligible: donor.calculated_eligibility === 'Eligible',
-    eligibility_status: donor.calculated_eligibility,
-    last_donation: donor.last_donation_date
-  }));
+  return data || [];
 }
 
 export async function createDonor(donor: Partial<Donor>) {
@@ -349,13 +341,22 @@ export async function fetchInventoryByHospital() {
 // ===== DASHBOARD STATS =====
 export async function getDashboardStats(): Promise<DashboardStats> {
   const [donors, donations, inventory] = await Promise.all([
-    supabase.from('donors_with_eligibility').select('calculated_eligibility'),
+    supabase.from('donors').select('last_donation_date'),
     supabase.from('donations').select('test_result'),
     fetchInventorySummary()
   ]);
   
   const totalDonors = donors.data?.length || 0;
-  const eligibleDonors = donors.data?.filter(d => d.calculated_eligibility === 'Eligible').length || 0;
+  
+  // Calculate eligible donors (last donation > 58 days ago or never donated)
+  const now = new Date();
+  const eligibleDonors = donors.data?.filter(d => {
+    if (!d.last_donation_date) return true; // Never donated = eligible
+    const lastDonation = new Date(d.last_donation_date);
+    const daysSince = Math.floor((now.getTime() - lastDonation.getTime()) / (1000 * 60 * 60 * 24));
+    return daysSince > 58;
+  }).length || 0;
+  
   const totalDonations = donations.data?.length || 0;
   const acceptedDonations = donations.data?.filter(d => d.test_result === 'Accepted').length || 0;
   
