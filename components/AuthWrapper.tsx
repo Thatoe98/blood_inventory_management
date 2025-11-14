@@ -70,7 +70,12 @@ export default function AuthWrapper({ children }: { children: React.ReactNode })
     return <>{children}</>;
   }
 
-  // Show authenticated pages with sidebar
+  // Show hospital pages without sidebar (hospital has its own navigation)
+  if (pathname.startsWith('/hospital/')) {
+    return <>{children}</>;
+  }
+
+  // Show authenticated pages with sidebar (admin pages only)
   if (isAuthenticated) {
     return (
       <div className="flex h-screen overflow-hidden bg-gray-50">

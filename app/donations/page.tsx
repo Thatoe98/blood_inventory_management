@@ -30,10 +30,18 @@ export default function DonationsPage() {
   const [editingDonation, setEditingDonation] = useState<Donation | null>(null);
   const [toast, setToast] = useState<ToastType>(null);
   
+  // Form states for controlled inputs
+  const [selectedDonorId, setSelectedDonorId] = useState('');
+  const [selectedHospitalId, setSelectedHospitalId] = useState('');
+  const [selectedCampaignId, setSelectedCampaignId] = useState('');
+  const [quantityMl, setQuantityMl] = useState('450');
+  const [hemoglobinLevel, setHemoglobinLevel] = useState('13.0');
+  
   // Filter states
   const [searchName, setSearchName] = useState('');
   const [filterMonth, setFilterMonth] = useState('');
   const [filterYear, setFilterYear] = useState('');
+  const [filterHospitalId, setFilterHospitalId] = useState('');
 
   useEffect(() => {
     loadData();
@@ -87,6 +95,11 @@ export default function DonationsPage() {
     
     if (!matchesName) return false;
 
+    // Hospital filtering
+    if (filterHospitalId && donation.hospital_id !== filterHospitalId) {
+      return false;
+    }
+
     // Date filtering
     if (filterMonth || filterYear) {
       const donationDate = new Date(donation.donation_timestamp);
@@ -102,25 +115,21 @@ export default function DonationsPage() {
 
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-
-    const campaignId = formData.get('campaign_id') as string;
-    const hemoglobinValue = formData.get('hemoglobin_level') as string;
     
     const donationData: any = {
-      donor_id: formData.get('donor_id') as string,
-      hospital_id: formData.get('hospital_id') as string,
-      quantity_ml: parseInt(formData.get('quantity_ml') as string) || 450,
+      donor_id: selectedDonorId,
+      hospital_id: selectedHospitalId,
+      quantity_ml: parseInt(quantityMl) || 450,
     };
 
     // Only include hemoglobin_level if it has a value
-    if (hemoglobinValue && hemoglobinValue.trim() !== '') {
-      donationData.hemoglobin_level = parseFloat(hemoglobinValue);
+    if (hemoglobinLevel && hemoglobinLevel.trim() !== '') {
+      donationData.hemoglobin_level = parseFloat(hemoglobinLevel);
     }
 
     // Only include campaign_id if it has a value
-    if (campaignId && campaignId.trim() !== '') {
-      donationData.campaign_id = campaignId;
+    if (selectedCampaignId && selectedCampaignId.trim() !== '') {
+      donationData.campaign_id = selectedCampaignId;
     }
 
     try {
@@ -133,6 +142,7 @@ export default function DonationsPage() {
       }
       setIsModalOpen(false);
       setEditingDonation(null);
+      resetForm();
       loadData();
     } catch (error: any) {
       console.error('Error saving donation:', error);
@@ -140,8 +150,21 @@ export default function DonationsPage() {
     }
   };
 
+  const resetForm = () => {
+    setSelectedDonorId('');
+    setSelectedHospitalId('');
+    setSelectedCampaignId('');
+    setQuantityMl('450');
+    setHemoglobinLevel('13.0');
+  };
+
   const handleEdit = (donation: Donation) => {
     setEditingDonation(donation);
+    setSelectedDonorId(donation.donor_id);
+    setSelectedHospitalId(donation.hospital_id);
+    setSelectedCampaignId(donation.campaign_id || '');
+    setQuantityMl(donation.quantity_ml?.toString() || '450');
+    setHemoglobinLevel(donation.hemoglobin_level?.toString() || '');
     setIsModalOpen(true);
   };
 
@@ -198,8 +221,21 @@ export default function DonationsPage() {
             />
           </div>
 
-          {/* Date Filters */}
+          {/* Filters */}
           <div className="flex flex-wrap gap-3">
+            <select
+              value={filterHospitalId}
+              onChange={(e) => setFilterHospitalId(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
+            >
+              <option value="">All Hospitals</option>
+              {hospitals.map((hospital) => (
+                <option key={hospital.hospital_id} value={hospital.hospital_id}>
+                  {hospital.name}
+                </option>
+              ))}
+            </select>
+
             <select
               value={filterMonth}
               onChange={(e) => setFilterMonth(e.target.value)}
@@ -236,12 +272,13 @@ export default function DonationsPage() {
               })}
             </select>
 
-            {(searchName || filterMonth || filterYear) && (
+            {(searchName || filterMonth || filterYear || filterHospitalId) && (
               <button
                 onClick={() => {
                   setSearchName('');
                   setFilterMonth('');
                   setFilterYear('');
+                  setFilterHospitalId('');
                 }}
                 className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 text-sm font-medium"
               >
@@ -282,63 +319,76 @@ export default function DonationsPage() {
         onClose={() => {
           setIsModalOpen(false);
           setEditingDonation(null);
+          resetForm();
         }}
         title={editingDonation ? 'Edit Donation' : 'Add New Donation'}
       >
         <form onSubmit={handleSave} className="space-y-4">
-          <div>
-            <label className="block text-sm font-semibold mb-1">Donor *</label>
-            <div className="flex gap-2">
-              <select
-                name="donor_id"
-                defaultValue={editingDonation?.donor_id}
-                required
-                className="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
-              >
-                <option value="">Select Donor</option>
-                {donors
-                  .filter((donor) => {
-                    // Only show eligible donors
-                    const now = new Date();
-                    if (donor.last_donation_date) {
-                      const lastDonation = new Date(donor.last_donation_date);
-                      const daysSince = Math.floor((now.getTime() - lastDonation.getTime()) / (1000 * 60 * 60 * 24));
-                      return daysSince > 58; // Only eligible donors (>58 days)
-                    }
-                    return true; // Never donated = eligible
-                  })
-                  .map((donor) => {
-                    const bloodType = `${donor.abo_group}${donor.rh_factor}`;
-                    return (
-                      <option key={donor.donor_id} value={donor.donor_id}>
-                        {`${donor.first_name} ${donor.last_name}`} - {bloodType} (Eligible)
-                      </option>
-                    );
-                  })}
-              </select>
-              <button
-                type="button"
-                onClick={() => {
-                  // Save current form state to localStorage
-                  const formData = new FormData(document.querySelector('form') as HTMLFormElement);
-                  localStorage.setItem('pendingDonation', JSON.stringify({
-                    hospital_id: formData.get('hospital_id'),
-                    quantity_ml: formData.get('quantity_ml'),
-                    hemoglobin_level: formData.get('hemoglobin_level'),
-                    campaign_id: formData.get('campaign_id'),
-                    returnToDonations: true
-                  }));
-                  // Navigate to add donor page
-                  window.location.href = '/donors?action=add&returnTo=donations';
-                }}
-                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 whitespace-nowrap font-semibold flex items-center gap-1 shadow-md hover:shadow-lg transition-all duration-300"
-                title="Add New Donor"
-              >
-                <span>➕</span>
-                <span>Add Donor</span>
-              </button>
+          {editingDonation ? (
+            // When editing, show donor info as read-only
+            <div>
+              <label className="block text-sm font-semibold mb-1">Donor</label>
+              <div className="px-3 py-2 bg-gray-100 border border-gray-300 rounded text-gray-700">
+                {editingDonation.donor_name} - {editingDonation.blood_type}
+              </div>
+              <p className="text-xs text-gray-500 mt-1">Donor cannot be changed when editing</p>
             </div>
-          </div>
+          ) : (
+            // When adding new, show donor selection with add button
+            <div>
+              <label className="block text-sm font-semibold mb-1">Donor *</label>
+              <div className="flex gap-2">
+                <select
+                  name="donor_id"
+                  value={selectedDonorId}
+                  onChange={(e) => setSelectedDonorId(e.target.value)}
+                  required
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
+                >
+                  <option value="">Select Donor</option>
+                  {donors
+                    .filter((donor) => {
+                      // Only show eligible donors
+                      const now = new Date();
+                      if (donor.last_donation_date) {
+                        const lastDonation = new Date(donor.last_donation_date);
+                        const daysSince = Math.floor((now.getTime() - lastDonation.getTime()) / (1000 * 60 * 60 * 24));
+                        return daysSince > 58; // Only eligible donors (>58 days)
+                      }
+                      return true; // Never donated = eligible
+                    })
+                    .map((donor) => {
+                      const bloodType = `${donor.abo_group}${donor.rh_factor}`;
+                      return (
+                        <option key={donor.donor_id} value={donor.donor_id}>
+                          {`${donor.first_name} ${donor.last_name}`} - {bloodType} (Eligible)
+                        </option>
+                      );
+                    })}
+                </select>
+                <button
+                  type="button"
+                  onClick={() => {
+                    // Save current form state to localStorage
+                    localStorage.setItem('pendingDonation', JSON.stringify({
+                      hospital_id: selectedHospitalId,
+                      quantity_ml: quantityMl,
+                      hemoglobin_level: hemoglobinLevel,
+                      campaign_id: selectedCampaignId,
+                      returnToDonations: true
+                    }));
+                    // Navigate to add donor page
+                    window.location.href = '/donors?action=add&returnTo=donations';
+                  }}
+                  className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 whitespace-nowrap font-semibold flex items-center gap-1 shadow-md hover:shadow-lg transition-all duration-300"
+                  title="Add New Donor"
+                >
+                  <span>➕</span>
+                  <span>Add Donor</span>
+                </button>
+              </div>
+            </div>
+          )}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-semibold mb-1">Quantity (ml) *</label>
@@ -346,7 +396,8 @@ export default function DonationsPage() {
                 type="number"
                 name="quantity_ml"
                 min="1"
-                defaultValue={editingDonation?.quantity_ml || 450}
+                value={quantityMl}
+                onChange={(e) => setQuantityMl(e.target.value)}
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded"
               />
@@ -357,7 +408,8 @@ export default function DonationsPage() {
                 type="number"
                 step="0.01"
                 name="hemoglobin_level"
-                defaultValue={editingDonation?.hemoglobin_level}
+                value={hemoglobinLevel}
+                onChange={(e) => setHemoglobinLevel(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded"
               />
             </div>
@@ -366,7 +418,8 @@ export default function DonationsPage() {
             <label className="block text-sm font-semibold mb-1">Hospital *</label>
             <select
               name="hospital_id"
-              defaultValue={editingDonation?.hospital_id}
+              value={selectedHospitalId}
+              onChange={(e) => setSelectedHospitalId(e.target.value)}
               required
               className="w-full px-3 py-2 border border-gray-300 rounded"
             >
@@ -382,7 +435,8 @@ export default function DonationsPage() {
             <label className="block text-sm font-semibold mb-1">Campaign (Optional)</label>
             <select
               name="campaign_id"
-              defaultValue={editingDonation?.campaign_id || ''}
+              value={selectedCampaignId}
+              onChange={(e) => setSelectedCampaignId(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded"
             >
               <option value="">None</option>
@@ -421,6 +475,7 @@ export default function DonationsPage() {
               onClick={() => {
                 setIsModalOpen(false);
                 setEditingDonation(null);
+                resetForm();
               }}
               className="flex-1 px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500"
             >
