@@ -3,6 +3,7 @@ interface StatsCardProps {
   value: string | number;
   icon: string;
   color: 'red' | 'blue' | 'green' | 'yellow' | 'purple' | 'orange';
+  subtitle?: string;
 }
 
 const colorClasses = {
@@ -23,7 +24,7 @@ const iconBgClasses = {
   orange: 'bg-orange-100 text-orange-600',
 };
 
-export default function StatsCard({ title, value, icon, color }: StatsCardProps) {
+export default function StatsCard({ title, value, icon, color, subtitle }: StatsCardProps) {
   return (
     <div className="group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden border border-gray-100 animate-fade-in-up">
       {/* Background gradient overlay */}
@@ -51,6 +52,13 @@ export default function StatsCard({ title, value, icon, color }: StatsCardProps)
         <div className="text-sm font-medium text-gray-600 uppercase tracking-wide">
           {title}
         </div>
+        
+        {/* Subtitle (optional) */}
+        {subtitle && (
+          <div className="text-xs text-gray-500 mt-1">
+            {subtitle}
+          </div>
+        )}
         
         {/* Bottom accent line */}
         <div className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${colorClasses[color]} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left`}></div>

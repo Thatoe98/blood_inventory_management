@@ -15,7 +15,8 @@ export default function Dashboard() {
     donations: 0,
     hospitals: 0,
     patients: 0,
-    campaigns: 0
+    campaigns: 0,
+    totalBloodUnits: 0
   });
   const [donors, setDonors] = useState<Donor[]>([]);
   const [donations, setDonations] = useState<Donation[]>([]);
@@ -56,13 +57,17 @@ export default function Dashboard() {
         return startDate >= today;
       });
       
+      // Calculate total blood units from inventory
+      const totalBloodUnits = inventoryData.reduce((sum, item) => sum + item.available_units, 0);
+      
       setStats({
         donors: donorsData.length,
         eligibleDonors: eligibleDonors.length,
         donations: donationsData.length,
         hospitals: hospitalsData.length,
         patients: patientsData.length,
-        campaigns: upcomingCampaigns.length
+        campaigns: upcomingCampaigns.length,
+        totalBloodUnits: totalBloodUnits
       });
       setDonors(donorsData);
       setDonations(donationsData);
@@ -132,36 +137,33 @@ export default function Dashboard() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <StatsCard
-          title="Total Donors"
-          value={stats.donors}
+          title="Donors"
+          value={`${stats.eligibleDonors}/${stats.donors}`}
           icon="👥"
           color="blue"
+          subtitle="Eligible / Total"
         />
         <StatsCard
-          title="Eligible Donors"
-          value={stats.eligibleDonors}
-          icon="✅"
-          color="green"
-        />
-        <StatsCard
-          title="Total Donations"
-          value={stats.donations}
+          title="Total Blood Units"
+          value={stats.totalBloodUnits}
           icon="🩸"
           color="red"
+          subtitle="Available in Inventory"
+        />
+        <StatsCard
+          title="Patients"
+          value={stats.patients}
+          icon="🤒"
+          color="orange"
+          subtitle="Requiring Transfusion"
         />
         <StatsCard
           title="Hospitals"
           value={stats.hospitals}
           icon="🏥"
           color="purple"
-        />
-        <StatsCard
-          title="Upcoming Campaigns"
-          value={stats.campaigns}
-          icon="📅"
-          color="yellow"
         />
       </div>
 

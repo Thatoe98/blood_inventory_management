@@ -10,6 +10,7 @@ CREATE TABLE public.campaigns (
   location text NOT NULL,
   notes text,
   created_at timestamp without time zone DEFAULT now(),
+  total_units_collected integer DEFAULT 0,
   CONSTRAINT campaigns_pkey PRIMARY KEY (campaign_id),
   CONSTRAINT campaigns_hospital_id_fkey FOREIGN KEY (hospital_id) REFERENCES public.hospitals(hospital_id)
 );
@@ -19,7 +20,6 @@ CREATE TABLE public.donations (
   hospital_id uuid NOT NULL,
   campaign_id uuid,
   donation_timestamp timestamp without time zone DEFAULT now(),
-  test_result character varying DEFAULT 'Pending'::character varying CHECK (test_result::text = ANY (ARRAY['Pending'::character varying, 'Accepted'::character varying, 'Rejected'::character varying]::text[])),
   quantity_ml integer DEFAULT 450 CHECK (quantity_ml > 0),
   hemoglobin_level numeric,
   notes text,
@@ -41,7 +41,6 @@ CREATE TABLE public.donors (
   rh_factor character varying NOT NULL CHECK (rh_factor::text = ANY (ARRAY['+'::character varying, '-'::character varying]::text[])),
   last_donation_date date,
   city character varying,
-  eligibility_status character varying DEFAULT 'Eligible'::character varying CHECK (eligibility_status::text = ANY (ARRAY['Eligible'::character varying, 'Ineligible'::character varying, 'Deferred'::character varying]::text[])),
   notes text,
   created_at timestamp without time zone DEFAULT now(),
   CONSTRAINT donors_pkey PRIMARY KEY (donor_id)
@@ -57,6 +56,7 @@ CREATE TABLE public.hospitals (
   state character varying NOT NULL,
   postal_code character varying NOT NULL,
   created_at timestamp without time zone DEFAULT now(),
+  passkey character varying UNIQUE,
   CONSTRAINT hospitals_pkey PRIMARY KEY (hospital_id)
 );
 CREATE TABLE public.inventory (

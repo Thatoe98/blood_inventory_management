@@ -47,6 +47,7 @@ export interface Campaign {
   end_date: string;
   location: string;
   notes?: string;
+  total_units_collected?: number;
   created_at: string;
   hospital_name?: string;
   hospitals?: { name: string };

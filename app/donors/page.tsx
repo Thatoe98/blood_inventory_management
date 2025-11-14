@@ -136,17 +136,23 @@ export default function DonorsPage() {
       return;
     }
 
+    const emailValue = formData.get('email') as string;
+    
     const donorData: any = {
       first_name: formData.get('first_name') as string,
       last_name: formData.get('last_name') as string,
       date_of_birth: dateOfBirth.toISOString().split('T')[0],
       sex: formData.get('sex') as string,
       phone_number: formData.get('phone_number') as string,
-      email: formData.get('email') as string,
       abo_group: formData.get('abo_group') as string,
       rh_factor: formData.get('rh_factor') as string,
       city: formData.get('city') as string,
     };
+
+    // Only include email if it has a value
+    if (emailValue && emailValue.trim() !== '') {
+      donorData.email = emailValue.trim();
+    }
 
     if (lastDonationDate) {
       donorData.last_donation_date = lastDonationDate.toISOString().split('T')[0];
@@ -170,14 +176,42 @@ export default function DonorsPage() {
       } else {
         await createDonor(donorData);
         showToast('Donor created successfully', 'success');
+        
+        // Check if we need to return to donations page
+        const returnTo = searchParams.get('returnTo');
+        if (returnTo === 'donations') {
+          // Redirect back to donations page with the form open
+          setTimeout(() => {
+            window.location.href = '/donations?action=add&returnFrom=donor';
+          }, 500);
+          return;
+        }
       }
       setIsModalOpen(false);
       setEditingDonor(null);
       setDateOfBirth(null);
       setLastDonationDate(null);
       loadDonors();
-    } catch (error) {
-      showToast('Failed to save donor', 'error');
+    } catch (error: any) {
+      console.error('Error saving donor:', error);
+      
+      // Check for specific error messages
+      let errorMessage = 'Failed to save donor';
+      
+      if (error.message?.includes('duplicate') || error.code === '23505') {
+        // PostgreSQL unique violation error code
+        if (error.message?.toLowerCase().includes('phone')) {
+          errorMessage = 'This phone number is already registered';
+        } else if (error.message?.toLowerCase().includes('email')) {
+          errorMessage = 'This email is already registered';
+        } else {
+          errorMessage = 'A donor with this phone number or email already exists';
+        }
+      } else if (error.message) {
+        errorMessage = `Failed to save donor: ${error.message}`;
+      }
+      
+      showToast(errorMessage, 'error');
     }
   };
 

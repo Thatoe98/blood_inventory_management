@@ -43,6 +43,17 @@ export default function DonationsPage() {
     if (action === 'add') {
       setIsModalOpen(true);
     }
+    
+    // Check if returning from adding a donor
+    const returnFrom = searchParams.get('returnFrom');
+    if (returnFrom === 'donor' && action === 'add') {
+      // Show success message
+      showToast('Donor added successfully! You can now select them.', 'success');
+      // Clear the pending donation data after a short delay
+      setTimeout(() => {
+        localStorage.removeItem('pendingDonation');
+      }, 1000);
+    }
   }, [searchParams]);
 
   const loadData = async () => {
@@ -277,33 +288,56 @@ export default function DonationsPage() {
         <form onSubmit={handleSave} className="space-y-4">
           <div>
             <label className="block text-sm font-semibold mb-1">Donor *</label>
-            <select
-              name="donor_id"
-              defaultValue={editingDonation?.donor_id}
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded"
-            >
-              <option value="">Select Donor</option>
-              {donors
-                .filter((donor) => {
-                  // Only show eligible donors
-                  const now = new Date();
-                  if (donor.last_donation_date) {
-                    const lastDonation = new Date(donor.last_donation_date);
-                    const daysSince = Math.floor((now.getTime() - lastDonation.getTime()) / (1000 * 60 * 60 * 24));
-                    return daysSince > 58; // Only eligible donors (>58 days)
-                  }
-                  return true; // Never donated = eligible
-                })
-                .map((donor) => {
-                  const bloodType = `${donor.abo_group}${donor.rh_factor}`;
-                  return (
-                    <option key={donor.donor_id} value={donor.donor_id}>
-                      {`${donor.first_name} ${donor.last_name}`} - {bloodType} (Eligible)
-                    </option>
-                  );
-                })}
-            </select>
+            <div className="flex gap-2">
+              <select
+                name="donor_id"
+                defaultValue={editingDonation?.donor_id}
+                required
+                className="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
+              >
+                <option value="">Select Donor</option>
+                {donors
+                  .filter((donor) => {
+                    // Only show eligible donors
+                    const now = new Date();
+                    if (donor.last_donation_date) {
+                      const lastDonation = new Date(donor.last_donation_date);
+                      const daysSince = Math.floor((now.getTime() - lastDonation.getTime()) / (1000 * 60 * 60 * 24));
+                      return daysSince > 58; // Only eligible donors (>58 days)
+                    }
+                    return true; // Never donated = eligible
+                  })
+                  .map((donor) => {
+                    const bloodType = `${donor.abo_group}${donor.rh_factor}`;
+                    return (
+                      <option key={donor.donor_id} value={donor.donor_id}>
+                        {`${donor.first_name} ${donor.last_name}`} - {bloodType} (Eligible)
+                      </option>
+                    );
+                  })}
+              </select>
+              <button
+                type="button"
+                onClick={() => {
+                  // Save current form state to localStorage
+                  const formData = new FormData(document.querySelector('form') as HTMLFormElement);
+                  localStorage.setItem('pendingDonation', JSON.stringify({
+                    hospital_id: formData.get('hospital_id'),
+                    quantity_ml: formData.get('quantity_ml'),
+                    hemoglobin_level: formData.get('hemoglobin_level'),
+                    campaign_id: formData.get('campaign_id'),
+                    returnToDonations: true
+                  }));
+                  // Navigate to add donor page
+                  window.location.href = '/donors?action=add&returnTo=donations';
+                }}
+                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 whitespace-nowrap font-semibold flex items-center gap-1 shadow-md hover:shadow-lg transition-all duration-300"
+                title="Add New Donor"
+              >
+                <span>➕</span>
+                <span>Add Donor</span>
+              </button>
+            </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -352,12 +386,28 @@ export default function DonationsPage() {
               className="w-full px-3 py-2 border border-gray-300 rounded"
             >
               <option value="">None</option>
-              {campaigns.map((campaign) => (
-                <option key={campaign.campaign_id} value={campaign.campaign_id}>
-                  {campaign.name}
-                </option>
-              ))}
+              {campaigns
+                .filter((campaign) => {
+                  // Only show ongoing campaigns (started and not yet ended)
+                  const today = new Date();
+                  const startDate = new Date(campaign.start_date);
+                  const endDate = new Date(campaign.end_date);
+                  return startDate <= today && endDate >= today;
+                })
+                .map((campaign) => (
+                  <option key={campaign.campaign_id} value={campaign.campaign_id}>
+                    {campaign.name}
+                  </option>
+                ))}
             </select>
+            {campaigns.filter((c) => {
+              const today = new Date();
+              const startDate = new Date(c.start_date);
+              const endDate = new Date(c.end_date);
+              return startDate <= today && endDate >= today;
+            }).length === 0 && (
+              <p className="text-xs text-gray-500 mt-1">No ongoing campaigns at the moment</p>
+            )}
           </div>
           <div className="flex gap-2 pt-4">
             <button
