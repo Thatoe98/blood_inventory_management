@@ -9,6 +9,7 @@ export interface Hospital {
   city: string;
   state: string;
   postal_code: string;
+  passkey?: string;
   created_at: string;
 }
 

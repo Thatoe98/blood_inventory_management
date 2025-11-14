@@ -21,8 +21,12 @@ export default function HospitalsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('');
   const [filterCity, setFilterCity] = useState('');
-
-  const hospitalTypes = ['Government', 'Private', 'Trust'];
+  const [newHospitalPasskey, setNewHospitalPasskey] = useState<string | null>(null);
+  const [showPasskeyModal, setShowPasskeyModal] = useState(false);
+  
+  // Get unique cities and types from hospitals for dropdowns
+  const uniqueCities = Array.from(new Set(hospitals.map(h => h.city))).sort();
+  const uniqueTypes = Array.from(new Set(hospitals.map(h => h.type).filter(Boolean))).sort();
 
   useEffect(() => {
     loadHospitals();
@@ -67,7 +71,7 @@ export default function HospitalsPage() {
     }
 
     if (filterCity) {
-      filtered = filtered.filter((h) => h.city.toLowerCase().includes(filterCity.toLowerCase()));
+      filtered = filtered.filter((h) => h.city === filterCity);
     }
 
     setFilteredHospitals(filtered);
@@ -96,12 +100,16 @@ export default function HospitalsPage() {
       if (editingHospital) {
         await updateHospital(editingHospital.hospital_id, hospitalData);
         showToast('Hospital updated successfully', 'success');
+        setIsModalOpen(false);
+        setEditingHospital(null);
       } else {
-        await createHospital(hospitalData);
-        showToast('Hospital created successfully', 'success');
+        const newHospital = await createHospital(hospitalData);
+        // Show passkey modal for new hospital
+        setNewHospitalPasskey(newHospital.passkey);
+        setShowPasskeyModal(true);
+        setIsModalOpen(false);
+        setEditingHospital(null);
       }
-      setIsModalOpen(false);
-      setEditingHospital(null);
       loadHospitals();
     } catch (error) {
       showToast('Failed to save hospital', 'error');
@@ -148,7 +156,7 @@ export default function HospitalsPage() {
           }}
           className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
         >
-          + Add Hospital
+          + Register Hospital
         </button>
       </div>
 
@@ -167,19 +175,24 @@ export default function HospitalsPage() {
           className="px-4 py-2 border border-gray-300 rounded"
         >
           <option value="">All Types</option>
-          {hospitalTypes.map((type) => (
+          {uniqueTypes.map((type) => (
             <option key={type} value={type}>
               {type}
             </option>
           ))}
         </select>
-        <input
-          type="text"
-          placeholder="Filter by city..."
+        <select
           value={filterCity}
           onChange={(e) => setFilterCity(e.target.value)}
           className="px-4 py-2 border border-gray-300 rounded"
-        />
+        >
+          <option value="">All Cities</option>
+          {uniqueCities.map((city) => (
+            <option key={city} value={city}>
+              {city}
+            </option>
+          ))}
+        </select>
         <button
           onClick={() => {
             setSearchTerm('');
@@ -198,9 +211,17 @@ export default function HospitalsPage() {
             { key: 'name', label: 'Hospital Name' },
             { key: 'type', label: 'Type' },
             { key: 'city', label: 'City' },
-            { key: 'state', label: 'State' },
             { key: 'phone', label: 'Phone' },
             { key: 'email', label: 'Email' },
+            { 
+              key: 'passkey', 
+              label: 'Pass-Key',
+              render: (h: Hospital) => (
+                <span className="font-mono font-semibold text-red-600">
+                  {h.passkey || 'N/A'}
+                </span>
+              )
+            },
           ]}
           data={filteredHospitals.map(h => ({ ...h, id: h.hospital_id }))}
           onEdit={handleEdit}
@@ -215,7 +236,7 @@ export default function HospitalsPage() {
           setIsModalOpen(false);
           setEditingHospital(null);
         }}
-        title={editingHospital ? 'Edit Hospital' : 'Add New Hospital'}
+        title={editingHospital ? 'Edit Hospital' : 'Register New Hospital'}
       >
         <form onSubmit={handleSave} className="space-y-4">
           <div>
@@ -237,7 +258,7 @@ export default function HospitalsPage() {
               className="w-full px-3 py-2 border border-gray-300 rounded"
             >
               <option value="">Select Type</option>
-              {hospitalTypes.map((type) => (
+              {uniqueTypes.map((type) => (
                 <option key={type} value={type}>
                   {type}
                 </option>
@@ -322,6 +343,58 @@ export default function HospitalsPage() {
             </button>
           </div>
         </form>
+      </Modal>
+
+      {/* Passkey Modal */}
+      <Modal
+        isOpen={showPasskeyModal}
+        onClose={() => {
+          setShowPasskeyModal(false);
+          setNewHospitalPasskey(null);
+          showToast('Hospital registered successfully', 'success');
+        }}
+        title="🎉 Hospital Registered Successfully!"
+      >
+        <div className="space-y-4">
+          <div className="bg-yellow-50 border-2 border-yellow-400 rounded-lg p-6 text-center">
+            <p className="text-lg font-semibold text-gray-800 mb-3">
+              Please save this Pass-Key for hospital login:
+            </p>
+            <div className="bg-white border-2 border-red-500 rounded-lg p-4 mb-4">
+              <p className="text-3xl font-mono font-bold text-red-600 tracking-wider">
+                {newHospitalPasskey}
+              </p>
+            </div>
+            <div className="text-sm text-gray-600 space-y-2">
+              <p className="flex items-center justify-center gap-2">
+                <span className="text-yellow-600">⚠️</span>
+                <span className="font-semibold">Important: Keep this Pass-Key secure!</span>
+              </p>
+              <p>This Pass-Key will be used for hospital user authentication.</p>
+              <p>You can view it later in the hospitals table.</p>
+            </div>
+          </div>
+          <button
+            onClick={() => {
+              // Copy to clipboard
+              navigator.clipboard.writeText(newHospitalPasskey || '');
+              showToast('Pass-Key copied to clipboard!', 'info');
+            }}
+            className="w-full px-4 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 font-semibold"
+          >
+            📋 Copy Pass-Key to Clipboard
+          </button>
+          <button
+            onClick={() => {
+              setShowPasskeyModal(false);
+              setNewHospitalPasskey(null);
+              showToast('Hospital registered successfully', 'success');
+            }}
+            className="w-full px-4 py-3 bg-green-600 text-white rounded hover:bg-green-700 font-semibold"
+          >
+            ✓ I've Saved the Pass-Key
+          </button>
+        </div>
       </Modal>
 
       {toast && <Toast {...toast} onClose={() => setToast(null)} />}

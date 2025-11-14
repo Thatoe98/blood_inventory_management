@@ -1,0 +1,84 @@
+donor_id,first_name,last_name,date_of_birth,sex,phone_number,email,abo_group,rh_factor,last_donation_date,city,notes,created_at
+06a803d9-6ecc-46e2-9786-e903b271da35,Siriporn,Kumkong,1985-05-23,Female,0850123567,siriporn.k@email.com,AB,+,2025-10-22,Nakhon Pathom,,2025-11-14 06:05:49.976715
+08cfb172-58bd-413f-9f2e-a1851423156d,Wirat,Somboon,1992-12-05,Male,0863456890,wirat.s@email.com,B,-,2025-08-19,Pathum Thani,,2025-11-14 06:05:49.976715
+0b0b03ee-8dc8-42d6-8389-c483561d60ee,Yuttana,Kamkaew,1993-09-10,Male,0827890234,yuttana.k@email.com,AB,-,2025-09-26,Bangkok,,2025-11-14 06:05:49.976715
+0ebda951-c5f6-4033-b553-0c74a2dc3ffe,Pacharee,Thongdee,1994-08-24,Female,0869012456,pacharee.t@email.com,O,-,,Samut Prakan,,2025-11-14 06:05:49.976715
+152c1b1d-3465-4d60-b89d-48b9c3450692,Orapan,Mongkhon,1988-11-27,Female,0872345789,orapan.m@email.com,AB,-,,Pathum Thani,,2025-11-14 06:05:49.976715
+170d48f3-0237-4626-892b-025137ae2747,Chutima,Prasert,1985-12-06,Female,0830123567,chutima.p@email.com,B,+,2025-10-12,Nakhon Pathom,,2025-11-14 06:05:49.976715
+182abdc1-bd25-4c5f-bed9-46f804db0308,Thatoe,Nyi,1998-08-31,Male,0661076077,thatoe.n67@rsu.ac.th,B,+,2025-10-26,Pathum Thani,,2025-10-26 07:26:45.561082
+18634450-2c1a-44cb-8ea4-73c3f73aa758,Ittipol,Saengtong,1994-05-15,Male,0849012456,ittipol.s@email.com,AB,-,,Samut Prakan,,2025-11-14 06:05:49.976715
+1e86046d-3bb3-479e-8144-82b66eee6ce0,"Yan Naing ",Win,1999-01-20,Female,0865781110,yannaingwin@gmail.com,A,-,2024-02-20,Bangkok,,2025-11-12 08:34:32.349093
+23662640-e15e-458f-9a21-a6b22fe2a5a8,Montri,Duangrat,1987-07-11,Male,0804567901,montri.d@email.com,O,+,2025-11-11,Nonthaburi,,2025-11-14 06:05:49.976715
+312b6b75-ed68-4b5c-9528-d0f52ae770d5,Wanpen,Yodsuk,1989-12-24,Female,0806789123,wanpen.y@email.com,AB,+,,Samut Sakhon,,2025-11-14 06:05:49.976715
+33024c52-5fc7-4b10-9c11-4a4aa4ca7e31,Duangrat,Yimyueng,1993-08-19,Female,0837890234,duangrat.y@email.com,O,+,2025-09-23,Pathum Thani,,2025-11-14 06:05:49.976715
+337be435-d7ea-4a14-815a-e76b9cd12248,Apichat,Decho,1992-05-19,Male,0854678901,apichat.d@email.com,A,-,2025-10-20,Bangkok,,2025-11-14 06:05:49.976715
+344a81e4-7d1f-4d6b-86b7-2801f243979b,Thana,Saengchai,1994-02-20,Male,0801234567,thana.s@email.com,A,+,2025-07-30,Samut Prakan,,2025-11-14 06:05:49.976715
+3514cce8-87b6-4ace-9eee-89b6d670cd67,Pimchanok,Suksan,1988-08-12,Female,0852345789,pimchanok.s@email.com,B,-,,Samut Prakan,,2025-11-14 06:05:49.976715
+357750fd-f9e7-4a1f-8de8-0246b99cc1de,Suphan,Thitaphan,1992-04-28,Female,0893456890,suphan.t@email.com,O,+,2025-08-09,Samut Prakan,,2025-11-14 06:05:49.976715
+3dbdb26d-4663-4d92-a0e4-909f1411a178,Narong,Khamwan,1991-01-16,Male,0876890123,narong.k@email.com,A,-,2025-11-10,Samut Prakan,,2025-11-14 06:05:49.976715
+3e11ebcd-e0fb-4fe3-800e-c31016d05cf2,Niran,Khemchat,1989-05-16,Male,0836789123,niran.k@email.com,O,-,,Samut Sakhon,,2025-11-14 06:05:49.976715
+3f0d6e74-5f70-4171-a6f9-125986bc9be6,Pensri,Saetang,1986-06-14,Female,0890123456,pensri.s@email.com,A,+,2025-10-15,Nakhon Pathom,,2025-11-14 06:05:49.976715
+43bf7e12-f355-41a7-b51f-be7e255c483a,Suwanna,Boontham,1987-02-14,Female,0874567901,suwanna.b@email.com,B,-,2025-11-03,Nonthaburi,,2025-11-14 06:05:49.976715
+456204c5-f51a-478b-800e-875c7c0807af,Thawatchai,Prachuab,1989-03-27,Male,0826789123,thawatchai.p@email.com,O,+,,Samut Sakhon,,2025-11-14 06:05:49.976715
+46d002ed-e1ee-45cc-9ce9-c2491294f9dc,Samorn,Phumirat,1986-01-02,Female,0838901345,samorn.p@email.com,AB,-,2025-08-18,Pathum Thani,,2025-11-14 06:05:49.976715
+4d24677f-4a26-4dc8-9c02-29ee1f7c9d52,Nuanlaor,Intharamat,1989-02-18,Female,0816789123,nuanlaor.i@email.com,AB,-,,Samut Sakhon,,2025-11-14 06:05:49.976715
+4db71225-83e1-46e7-8cdf-41053a1c84a9,Preecha,Tanaka,1992-11-08,Male,0834567890,preecha.t@email.com,A,+,2025-08-20,Samut Prakan,,2025-11-14 06:05:49.976715
+4f0676ec-31d3-4068-92cf-0df59db15987,Siriwan,Chai,1995-01-12,Female,0856789012,siriwan.c@email.com,A,+,2025-07-15,Bangkok,,2025-11-14 06:05:49.976715
+5103668b-e28b-4002-9346-23a5fc9353af,Rattana,Boonmee,1993-04-18,Female,0878901234,rattana.b@email.com,A,+,2025-09-28,Pathum Thani,,2025-11-14 06:05:49.976715
+52256e19-9bb0-4f4c-9b03-6a8e2a00406b,Nittaya,Chaichana,1989-10-21,Female,0896789123,nittaya.c@email.com,B,-,,Samut Sakhon,,2025-11-14 06:05:49.976715
+582a2786-9c24-49f0-8141-e2b1ceba0c32,Supaporn,Wattana,1986-09-30,Female,0818901345,supaporn.w@email.com,B,-,2025-08-25,Pathum Thani,,2025-11-14 06:05:49.976715
+598a218c-4de5-467f-b992-8741f809742c,Kittisak,Yimyam,1987-09-25,Male,0867890123,kittisak.y@email.com,A,+,2025-11-05,Samut Sakhon,,2025-11-14 06:05:49.976715
+5cc96a2e-5eba-480c-a73f-419aa989c72c,Vichien,Srirat,1992-01-25,Male,0873456890,vichien.s@email.com,AB,+,2025-08-22,Samut Prakan,,2025-11-14 06:05:49.976715
+633a4ae0-3127-49d9-822d-40728018820c,Bancha,Suthep,1985-04-05,Male,0809123456,bancha.s@email.com,A,-,2025-10-08,Nakhon Pathom,,2025-11-14 06:05:49.976715
+657740b6-25dd-433f-bf83-4e7ac8dc9c04,Manop,Chanthaburi,1992-10-08,Male,0853467890,manop.c@email.com,B,+,2025-08-16,Pathum Thani,,2025-11-14 06:05:49.976715
+6cdbc661-a794-4a6f-9573-89f0980139c7,Somchai,Pattana,1990-03-15,Male,0812345678,somchai.p@email.com,A,+,2025-09-10,Bangkok,,2025-11-14 06:05:49.976715
+6f0ff6af-7fe1-49c5-baa8-4801c258e7e1,Pichai,Srisuk,1990-02-27,Male,0831245678,pichai.s@email.com,B,+,2025-09-22,Samut Prakan,,2025-11-14 06:05:49.976715
+75ce4146-8bd6-43a5-97f2-9cecc32037de,Porn,Srisawat,1988-11-24,Female,0865789012,porn.s@email.com,A,-,2025-07-22,Samut Sakhon,,2025-11-14 06:05:49.976715
+75de121a-d8d4-4069-aed6-99f077122f87,Chalermpon,Udomsak,1988-01-05,Male,0882345789,chalermpon.u@email.com,O,+,,Pathum Thani,,2025-11-14 06:05:49.976715
+77e64307-5040-4928-9cbe-9ada64c3a3d9,Praphan,Teerawat,1991-10-26,Male,0805678012,praphan.t@email.com,AB,-,2025-07-21,Bangkok,,2025-11-14 06:05:49.976715
+79462c20-337f-402a-99c8-580cac4891ca,Wuttichai,Boonsuk,1992-06-07,Male,0803456890,wuttichai.b@email.com,O,-,2025-08-24,Samut Prakan,,2025-11-14 06:05:49.976715
+7e12f3f5-23d9-4112-a6d7-984aadb06607,Damrong,Wiphawee,1990-07-04,Male,0861234678,damrong.w@email.com,AB,-,2025-09-14,Bangkok,,2025-11-14 06:05:49.976715
+7f6df1c9-a550-4e52-98c0-8d411cb39f72,Chanida,Kamol,1989-08-07,Female,0821345678,chanida.k@email.com,A,-,2025-09-18,Bangkok,,2025-11-14 06:05:49.976715
+8b5c4ba6-d59f-4b2f-8391-0aa12ce3d197,Boontham,Phakdeeprom,1986-12-12,Male,0848901345,boontham.p@email.com,O,+,2025-08-03,Bangkok,,2025-11-14 06:05:49.976715
+8f20c597-bb24-48df-b58a-beac6656b79e,Somjit,Phongphan,1994-09-13,Female,0820134567,somjit.p@email.com,A,-,2025-07-18,Bangkok,,2025-11-14 06:05:49.976715
+912eb478-4b50-4210-9936-a8e9fa6f67f3,Wichai,Krasin,1991-12-03,Male,0889012345,wichai.k@email.com,A,+,2025-08-05,Bangkok,,2025-11-14 06:05:49.976715
+93170804-1c45-4c5b-be73-3a6fe466a202,Weerasak,Charoenpong,1990-11-21,Male,0881234678,weerasak.c@email.com,O,-,2025-09-11,Bangkok,,2025-11-14 06:05:49.976715
+9586cd82-4760-4a4a-b775-568678e632c0,Somsak,Narumon,1993-03-17,Male,0897801234,somsak.n@email.com,B,+,2025-09-12,Samut Prakan,,2025-11-14 06:05:49.976715
+9e8523b8-eed2-4972-a1b8-3831b9042f90,Surasak,Pimpa,1990-10-11,Male,0832456789,surasak.p@email.com,A,-,2025-11-08,Pathum Thani,,2025-11-14 06:05:49.976715
+a0eb7cc7-36f0-40bd-aff2-131654c3cf12,Anong,Wongsa,1988-05-30,Female,0845678901,anong.w@email.com,A,+,2025-10-25,Nonthaburi,,2025-11-14 06:05:49.976715
+a5231d91-81a6-4ff3-9826-6490ac18491d,Adisak,Phakdi,1993-05-07,Male,0807890234,adisak.p@email.com,B,-,2025-09-15,Bangkok,,2025-11-14 06:05:49.976715
+a95dcccc-bf0f-4810-b7c6-a9799a7229bc,Somwang,Sukhum,1985-11-16,Male,0880123567,somwang.s@email.com,O,-,2025-11-14,Nakhon Pathom,,2025-11-14 06:05:49.976715
+a9e25d5a-18cf-4f8f-b69b-cd52424ed697,Suda,Kasemsri,1987-01-22,Female,0864578901,suda.k@email.com,B,+,2025-10-30,Nonthaburi,,2025-11-14 06:05:49.976715
+a9f652ec-2211-497e-8f40-6d90bf36e0dd,Kyi Phyu,Sin,2000-08-14,Female,0661040122,kpsin1582@gmail.com,B,+,2025-11-12,Pathum Thani,,2025-11-14 05:01:44.701667
+b2602812-ad52-4013-a508-1937e94af916,Suphot,Chaiyakorn,1986-02-01,Male,0858901345,suphot.c@email.com,O,-,2025-11-14,Pathum Thani,,2025-11-14 06:05:49.976715
+b55c5acc-7777-4208-a9f7-7ad70e73f880,Niran,Suwan,1985-07-22,Male,0823456789,niran.s@email.com,A,+,2025-11-01,Pathum Thani,,2025-11-14 06:05:49.976715
+b5a1d745-d726-4cf3-b51c-401f4f510116,Wilai,Chotiros,1986-11-29,Female,0808912345,wilai.c@email.com,B,+,2025-08-08,Bangkok,,2025-11-14 06:05:49.976715
+bbb3e0f7-c8ee-47a7-a6d4-e328acd9e88b,Chaiyong,Panya,1991-05-11,Male,0875689012,chaiyong.p@email.com,B,+,2025-07-25,Bangkok,,2025-11-14 06:05:49.976715
+bf755b75-1f26-401c-93cc-bca91829e42a,Atchara,Pramote,1988-03-14,Female,0892345789,atchara.p@email.com,O,-,,Pathum Thani,,2025-11-14 06:05:49.976715
+bf88ac60-e9b6-46b9-a48d-3b9c1c6bcf3a,Kamol,Rattana,1986-07-09,Male,0887901234,kamol.r@email.com,A,-,2025-09-05,Bangkok,,2025-11-14 06:05:49.976715
+c328a90e-3709-4fb1-9a5d-64bc31846fe2,Waraporn,Taweesuk,1991-11-04,Female,0815678012,waraporn.t@email.com,O,+,2025-07-26,Bangkok,,2025-11-14 06:05:49.976715
+c8025e6d-28c4-4994-ab39-1fdcf748e46e,Kritsada,Lamai,1990-04-19,Male,0841234678,kritsada.l@email.com,B,-,2025-09-25,Bangkok,,2025-11-14 06:05:49.976715
+cb2a4662-3f3c-4107-8641-77eb9921ea61,Ranee,Pholprasit,1985-03-26,Female,0840123567,ranee.p@email.com,B,-,2025-10-18,Nakhon Pathom,,2025-11-14 06:05:49.976715
+cc416803-48f9-49b7-8dda-3385da771a6a,Nattapong,Sangthong,1990-05-09,Male,0851234678,nattapong.s@email.com,AB,+,2025-09-08,Bangkok,,2025-11-14 06:05:49.976715
+ccbdbb5d-add7-4beb-a80d-d16706bce2ff,Sorawit,Srisai,1991-08-01,Male,0895678012,sorawit.s@email.com,AB,+,2025-07-19,Bangkok,,2025-11-14 06:05:49.976715
+cf341f35-3c43-4d33-b417-3e9a6ed177c8,Kannika,Yodying,1985-09-28,Female,0870123567,kannika.y@email.com,O,+,2025-10-19,Nakhon Pathom,,2025-11-14 06:05:49.976715
+cfa78398-4cc6-4396-987f-9a8734d9000d,Somporn,Jankaew,1987-09-30,Female,0814567901,somporn.j@email.com,O,-,2025-11-07,Nonthaburi,,2025-11-14 06:05:49.976715
+cfeac7c3-c33f-441f-92c4-f2c2053aa382,Malee,Thongkham,1993-12-31,Female,0898012345,malee.t@email.com,A,-,2025-08-28,Pathum Thani,,2025-11-14 06:05:49.976715
+d208fea5-6539-446f-93be-705540aa6931,Panida,Thepsiri,1986-11-08,Female,0828901345,panida.t@email.com,AB,+,2025-08-14,Bangkok,,2025-11-14 06:05:49.976715
+d51374ac-0df9-486c-b77e-bb92de758e11,Phaiboon,Siriwat,1994-06-05,Male,0859012456,phaiboon.s@email.com,O,+,,Samut Prakan,,2025-11-14 06:05:49.976715
+d58df550-a1f1-4461-b1ea-29d97343dc5f,Ratree,Somphon,1987-06-03,Female,0894567901,ratree.s@email.com,AB,-,2025-11-09,Nonthaburi,,2025-11-14 06:05:49.976715
+db2a9ea5-7695-4e39-bbe8-c42b60282c4d,Anchalee,Wongprasit,1985-08-08,Female,0860123567,anchalee.w@email.com,AB,-,2025-10-26,Nakhon Pathom,,2025-11-14 06:05:49.976715
+dba81ccc-0aa9-4e4a-b293-6971d7650f7a,Sirichai,Bunnak,1990-09-12,Male,0871234678,sirichai.b@email.com,O,+,2025-09-17,Bangkok,,2025-11-14 06:05:49.976715
+dd8766d7-c63d-4ba6-b142-0c8755e65a32,Rungrat,Poonsawat,1994-03-31,Male,0839012456,rungrat.p@email.com,AB,+,,Samut Prakan,,2025-11-14 06:05:49.976715
+deb780db-73e6-4875-b649-4f4cfbabfc99,Jirawan,Thaworn,1988-09-02,Female,0862345789,jirawan.t@email.com,AB,+,,Pathum Thani,,2025-11-14 06:05:49.976715
+df462544-47af-4a38-9530-8de348159421,Sarinee,Witthaya,1993-10-09,Female,0847890234,sarinee.w@email.com,O,-,2025-09-19,Bangkok,,2025-11-14 06:05:49.976715
+df7d14f1-d118-4d15-849c-7b5bd7dc8755,Wassana,Nualchawee,1987-03-28,Female,0843567890,wassana.n@email.com,A,-,2025-08-12,Nonthaburi,,2025-11-14 06:05:49.976715
+e0e9ff42-0571-450e-b19a-b5250c216432,Duangjai,Prachum,1987-04-08,Female,0884567901,duangjai.p@email.com,AB,+,2025-11-06,Nonthaburi,,2025-11-14 06:05:49.976715
+e1e42c35-defb-417f-923c-aab9f31f0f07,Apinya,Mongkol,1989-09-04,Female,0886790123,apinya.m@email.com,B,+,,Samut Sakhon,,2025-11-14 06:05:49.976715
+e92adf42-38d4-455d-9f22-9bb826b07db5,Thanachai,Kaewta,1994-01-13,Male,0829012456,thanachai.k@email.com,B,-,,Samut Prakan,,2025-11-14 06:05:49.976715
+ead27eab-f4ca-480b-acbe-107973e09fa5,Nattaya,Boonsri,1988-06-15,Female,0842356789,nattaya.b@email.com,B,+,2025-11-12,Bangkok,,2025-11-14 06:05:49.976715
+eb37f697-183a-42df-b81d-8b1851163538,Boonlert,Rattanawong,1991-01-23,Male,0825678012,boonlert.r@email.com,O,-,2025-07-17,Bangkok,,2025-11-14 06:05:49.976715
+eca20641-ea36-4fcc-85f6-fbc0fa6ea60d,Prasit,Wongsawat,1991-06-28,Male,0885678012,prasit.w@email.com,B,-,2025-07-28,Bangkok,,2025-11-14 06:05:49.976715
+eff06537-8a72-4c09-906f-19238d508a43,Suchart,Bamrung,1992-03-20,Male,0883456890,suchart.b@email.com,AB,-,2025-08-11,Samut Prakan,,2025-11-14 06:05:49.976715
+f65f3b1a-2c0a-4857-a4ca-10e920fc191f,Anucha,Sawai,1994-07-23,Male,0819023456,anucha.s@email.com,B,+,,Pathum Thani,,2025-11-14 06:05:49.976715
+fe9dddee-7a49-4964-8bd9-61eab994a493,Chatchai,Niyom,1993-07-16,Male,0817890234,chatchai.n@email.com,AB,+,2025-09-20,Pathum Thani,,2025-11-14 06:05:49.976715

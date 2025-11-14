@@ -1,0 +1,11 @@
+hospital_id,name,type,phone,email,address,city,state,postal_code,created_at
+3964ce29-9490-4d2f-8562-50639ce01e10,Pathum Thani Regional Hospital,Regional Hospital,025678901,info@pathumthanihosp.go.th,123 Rangsit-Nakhon Nayok Road,Pathum Thani,Pathum Thani,12000,2025-11-14 06:10:49.331743
+55b2cc8e-607c-4f9a-8aa1-38539fdfcfe5,Nakhon Pathom Provincial Hospital,Provincial Hospital,023456123,info@nakhonpathomhosp.go.th,"99 Maliman Road, Phra Pathom Chedi",Nakhon Pathom,Nakhon Pathom,73000,2025-11-14 06:10:49.331743
+6c74bb6b-d016-4975-8a9b-bb9fd408d5ab,Bangkok General Hospital,General Hospital,022345678,info@bangkokgeneral.co.th,"2 Soi Soonvijai 7, New Petchburi Rd",Bangkok,Bangkok,10310,2025-11-14 06:10:49.331743
+80f6d627-e88f-438d-8b0c-9f94dd38e86a,Samut Prakan Medical Center,Medical Center,027891234,contact@samutprakanmed.co.th,"789 Sukhumvit Road, Pak Nam",Samut Prakan,Samut Prakan,10270,2025-11-14 06:10:49.331743
+8cd056df-46fe-466c-9cef-9685d0fed966,Chulalongkorn Memorial Hospital,University Hospital,022564000,info@chula.med.ac.th,"1873 Rama IV Road, Pathumwan",Bangkok,Bangkok,10330,2025-11-14 06:10:49.331743
+949f13bc-2957-4c97-af9c-a8db09066371,Nonthaburi Central Hospital,General Hospital,029012345,admin@nonthacentralhosp.co.th,"456 Rattanathibet Road, Bang Kraso",Nonthaburi,Nonthaburi,11000,2025-11-14 06:10:49.331743
+ab8a9a38-8995-456a-bf9e-d9bd89824552,Samut Sakhon Community Hospital,Community Hospital,023456789,info@samutsakhonhosp.go.th,"88 Ekachai Road, Mahachai",Samut Sakhon,Samut Sakhon,74000,2025-11-14 06:10:49.331743
+cdac73e2-00ff-45d5-bbef-a93f76d3d654,Pathum Thani Police Hospital,Police Hospital,025671111,admin@pathumpolicehosp.go.th,"567 Phahonyothin Road, Klong Luang",Pathum Thani,Pathum Thani,12120,2025-11-14 06:10:49.331743
+da53a12d-11aa-484e-be8e-93f99f30d233,Bangkok Heart Hospital,Specialty Hospital,023102345,contact@bangkokheart.com,"2 Soi Soonvijai 7, Petchburi Road",Bangkok,Bangkok,10400,2025-11-14 06:10:49.331743
+fb68276c-dff7-44e5-a2a6-37e60579c703,Siriraj Hospital Bangkok,Teaching Hospital,024197000,contact@siriraj.ac.th,"2 Wang Lang Road, Siriraj, Bangkok Noi",Bangkok,Bangkok,10700,2025-11-14 06:10:49.331743

@@ -21,13 +21,15 @@ export default function DonorsPage() {
   const [editingDonor, setEditingDonor] = useState<Donor | null>(null);
   const [toast, setToast] = useState<ToastType>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterBloodType, setFilterBloodType] = useState('');
+  const [filterAboGroup, setFilterAboGroup] = useState('');
+  const [filterRhFactor, setFilterRhFactor] = useState('');
   const [filterEligibility, setFilterEligibility] = useState('');
   const [filterCity, setFilterCity] = useState('');
   const [dateOfBirth, setDateOfBirth] = useState<Date | null>(null);
   const [lastDonationDate, setLastDonationDate] = useState<Date | null>(null);
 
-  const bloodTypes = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+  const aboGroups = ['A', 'B', 'AB', 'O'];
+  const rhFactors = ['+', '-'];
 
   useEffect(() => {
     loadDonors();
@@ -41,7 +43,7 @@ export default function DonorsPage() {
 
   useEffect(() => {
     filterDonorsList();
-  }, [searchTerm, filterBloodType, filterEligibility, filterCity, donors]);
+  }, [searchTerm, filterAboGroup, filterRhFactor, filterEligibility, filterCity, donors]);
 
   const loadDonors = async () => {
     try {
@@ -101,8 +103,12 @@ export default function DonorsPage() {
       );
     }
 
-    if (filterBloodType) {
-      filtered = filtered.filter((d) => `${d.abo_group}${d.rh_factor}` === filterBloodType);
+    if (filterAboGroup) {
+      filtered = filtered.filter((d) => d.abo_group === filterAboGroup);
+    }
+
+    if (filterRhFactor) {
+      filtered = filtered.filter((d) => d.rh_factor === filterRhFactor);
     }
 
     if (filterEligibility) {
@@ -262,16 +268,28 @@ export default function DonorsPage() {
         />
         
         {/* Filter Buttons - Smaller, Below Search */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-2">
           <select
-            value={filterBloodType}
-            onChange={(e) => setFilterBloodType(e.target.value)}
+            value={filterAboGroup}
+            onChange={(e) => setFilterAboGroup(e.target.value)}
             className="px-3 py-1.5 text-sm border border-gray-300 rounded"
           >
-            <option value="">All Blood Types</option>
-            {bloodTypes.map((type) => (
-              <option key={type} value={type}>
-                {type}
+            <option value="">All ABO Groups</option>
+            {aboGroups.map((group) => (
+              <option key={group} value={group}>
+                {group}
+              </option>
+            ))}
+          </select>
+          <select
+            value={filterRhFactor}
+            onChange={(e) => setFilterRhFactor(e.target.value)}
+            className="px-3 py-1.5 text-sm border border-gray-300 rounded"
+          >
+            <option value="">All Rh Factors</option>
+            {rhFactors.map((factor) => (
+              <option key={factor} value={factor}>
+                {factor}
               </option>
             ))}
           </select>
@@ -282,7 +300,7 @@ export default function DonorsPage() {
           >
             <option value="">All Statuses</option>
             <option value="Eligible">Eligible</option>
-            <option value="Not Eligible">Not Eligible</option>
+            <option value="Ineligible">Ineligible</option>
           </select>
           <select
             value={filterCity}
@@ -299,11 +317,12 @@ export default function DonorsPage() {
           <button
             onClick={() => {
               setSearchTerm('');
-              setFilterBloodType('');
+              setFilterAboGroup('');
+              setFilterRhFactor('');
               setFilterEligibility('');
               setFilterCity('');
             }}
-            className="px-3 py-1.5 text-sm bg-gray-500 text-white rounded hover:bg-gray-600 col-span-2 md:col-span-2"
+            className="px-3 py-1.5 text-sm bg-gray-500 text-white rounded hover:bg-gray-600 col-span-2"
           >
             Clear Filters
           </button>

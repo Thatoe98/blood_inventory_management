@@ -29,6 +29,11 @@ export default function DonationsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingDonation, setEditingDonation] = useState<Donation | null>(null);
   const [toast, setToast] = useState<ToastType>(null);
+  
+  // Filter states
+  const [searchName, setSearchName] = useState('');
+  const [filterMonth, setFilterMonth] = useState('');
+  const [filterYear, setFilterYear] = useState('');
 
   useEffect(() => {
     loadData();
@@ -64,20 +69,46 @@ export default function DonationsPage() {
     setToast({ message, type });
   };
 
+  // Filter donations based on search and filters
+  const filteredDonations = donations.filter((donation) => {
+    const donorName = donation.donor_name?.toLowerCase() || '';
+    const matchesName = searchName === '' || donorName.includes(searchName.toLowerCase());
+    
+    if (!matchesName) return false;
+
+    // Date filtering
+    if (filterMonth || filterYear) {
+      const donationDate = new Date(donation.donation_timestamp);
+      const donationMonth = donationDate.getMonth() + 1; // 1-12
+      const donationYear = donationDate.getFullYear();
+
+      if (filterMonth && parseInt(filterMonth) !== donationMonth) return false;
+      if (filterYear && parseInt(filterYear) !== donationYear) return false;
+    }
+
+    return true;
+  });
+
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
 
     const campaignId = formData.get('campaign_id') as string;
+    const hemoglobinValue = formData.get('hemoglobin_level') as string;
+    
     const donationData: any = {
       donor_id: formData.get('donor_id') as string,
       hospital_id: formData.get('hospital_id') as string,
       quantity_ml: parseInt(formData.get('quantity_ml') as string) || 450,
-      test_result: formData.get('test_result') as string,
-      hemoglobin_level: parseFloat(formData.get('hemoglobin_level') as string) || undefined,
     };
 
-    if (campaignId) {
+    // Only include hemoglobin_level if it has a value
+    if (hemoglobinValue && hemoglobinValue.trim() !== '') {
+      donationData.hemoglobin_level = parseFloat(hemoglobinValue);
+    }
+
+    // Only include campaign_id if it has a value
+    if (campaignId && campaignId.trim() !== '') {
       donationData.campaign_id = campaignId;
     }
 
@@ -92,8 +123,9 @@ export default function DonationsPage() {
       setIsModalOpen(false);
       setEditingDonation(null);
       loadData();
-    } catch (error) {
-      showToast('Failed to save donation', 'error');
+    } catch (error: any) {
+      console.error('Error saving donation:', error);
+      showToast(`Failed to save donation: ${error.message || 'Unknown error'}`, 'error');
     }
   };
 
@@ -141,6 +173,74 @@ export default function DonationsPage() {
         </button>
       </div>
 
+      {/* Search and Filters */}
+      <div className="bg-white rounded-lg shadow-sm p-4 mb-4">
+        <div className="space-y-3">
+          {/* Search Box */}
+          <div>
+            <input
+              type="text"
+              placeholder="Search by donor name..."
+              value={searchName}
+              onChange={(e) => setSearchName(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
+            />
+          </div>
+
+          {/* Date Filters */}
+          <div className="flex flex-wrap gap-3">
+            <select
+              value={filterMonth}
+              onChange={(e) => setFilterMonth(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
+            >
+              <option value="">All Months</option>
+              <option value="1">January</option>
+              <option value="2">February</option>
+              <option value="3">March</option>
+              <option value="4">April</option>
+              <option value="5">May</option>
+              <option value="6">June</option>
+              <option value="7">July</option>
+              <option value="8">August</option>
+              <option value="9">September</option>
+              <option value="10">October</option>
+              <option value="11">November</option>
+              <option value="12">December</option>
+            </select>
+
+            <select
+              value={filterYear}
+              onChange={(e) => setFilterYear(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
+            >
+              <option value="">All Years</option>
+              {Array.from({ length: 10 }, (_, i) => {
+                const year = new Date().getFullYear() - i;
+                return (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                );
+              })}
+            </select>
+
+            {(searchName || filterMonth || filterYear) && (
+              <button
+                onClick={() => {
+                  setSearchName('');
+                  setFilterMonth('');
+                  setFilterYear('');
+                }}
+                className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 text-sm font-medium"
+              >
+                Clear Filters
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
       <div className="bg-white rounded-lg shadow-sm p-6">
         <Table
           columns={[
@@ -158,25 +258,8 @@ export default function DonationsPage() {
             },
             { key: 'hospital_name', label: 'Hospital' },
             { key: 'campaign_name', label: 'Campaign' },
-            {
-              key: 'test_result',
-              label: 'Test Result',
-              render: (d: Donation) => (
-                <span
-                  className={`px-2 py-1 rounded text-xs font-semibold ${
-                    d.test_result === 'Accepted'
-                      ? 'bg-green-100 text-green-700'
-                      : d.test_result === 'Rejected'
-                      ? 'bg-red-100 text-red-700'
-                      : 'bg-yellow-100 text-yellow-700'
-                  }`}
-                >
-                  {d.test_result}
-                </span>
-              ),
-            },
           ]}
-          data={donations.map(d => ({ ...d, id: d.donation_id }))}
+          data={filteredDonations.map(d => ({ ...d, id: d.donation_id }))}
           onEdit={handleEdit}
           onDelete={handleDelete}
           emptyMessage="No donations found"
@@ -201,23 +284,25 @@ export default function DonationsPage() {
               className="w-full px-3 py-2 border border-gray-300 rounded"
             >
               <option value="">Select Donor</option>
-              {donors.map((donor) => {
-                // Calculate eligibility
-                const now = new Date();
-                let eligibilityStatus = 'Eligible';
-                if (donor.last_donation_date) {
-                  const lastDonation = new Date(donor.last_donation_date);
-                  const daysSince = Math.floor((now.getTime() - lastDonation.getTime()) / (1000 * 60 * 60 * 24));
-                  eligibilityStatus = daysSince > 58 ? 'Eligible' : 'Ineligible';
-                }
-                const bloodType = `${donor.abo_group}${donor.rh_factor}`;
-                
-                return (
-                  <option key={donor.donor_id} value={donor.donor_id}>
-                    {`${donor.first_name} ${donor.last_name}`} - {bloodType} ({eligibilityStatus})
-                  </option>
-                );
-              })}
+              {donors
+                .filter((donor) => {
+                  // Only show eligible donors
+                  const now = new Date();
+                  if (donor.last_donation_date) {
+                    const lastDonation = new Date(donor.last_donation_date);
+                    const daysSince = Math.floor((now.getTime() - lastDonation.getTime()) / (1000 * 60 * 60 * 24));
+                    return daysSince > 58; // Only eligible donors (>58 days)
+                  }
+                  return true; // Never donated = eligible
+                })
+                .map((donor) => {
+                  const bloodType = `${donor.abo_group}${donor.rh_factor}`;
+                  return (
+                    <option key={donor.donor_id} value={donor.donor_id}>
+                      {`${donor.first_name} ${donor.last_name}`} - {bloodType} (Eligible)
+                    </option>
+                  );
+                })}
             </select>
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -272,19 +357,6 @@ export default function DonationsPage() {
                   {campaign.name}
                 </option>
               ))}
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-semibold mb-1">Test Result *</label>
-            <select
-              name="test_result"
-              defaultValue={editingDonation?.test_result || 'Pending'}
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded"
-            >
-              <option value="Pending">Pending</option>
-              <option value="Passed">Passed</option>
-              <option value="Failed">Failed</option>
             </select>
           </div>
           <div className="flex gap-2 pt-4">

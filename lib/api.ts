@@ -67,9 +67,24 @@ export async function fetchHospitals(): Promise<Hospital[]> {
 }
 
 export async function createHospital(hospital: Partial<Hospital>) {
+  // Generate passkey from hospital name initials + 123
+  const generatePasskey = (name: string): string => {
+    const words = name.trim().split(/\s+/);
+    const initials = words
+      .slice(0, 3) // Take first 3 words
+      .map(word => word.charAt(0).toUpperCase())
+      .join('');
+    return `${initials}123`;
+  };
+
+  const hospitalWithPasskey = {
+    ...hospital,
+    passkey: generatePasskey(hospital.name || '')
+  };
+
   const { data, error } = await supabase
     .from('hospitals')
-    .insert(hospital)
+    .insert(hospitalWithPasskey)
     .select()
     .single();
   
