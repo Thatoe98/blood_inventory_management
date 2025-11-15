@@ -11,6 +11,7 @@ interface Donor {
   last_name: string;
   abo_group: string;
   rh_factor: string;
+  last_donation_date: string | null;
 }
 
 export default function HospitalAddDonationPage() {
@@ -67,11 +68,22 @@ export default function HospitalAddDonationPage() {
     try {
       const { data, error } = await supabase
         .from('donors')
-        .select('donor_id, first_name, last_name, abo_group, rh_factor')
+        .select('donor_id, first_name, last_name, abo_group, rh_factor, last_donation_date')
         .order('last_name', { ascending: true });
 
       if (error) throw error;
-      setDonors(data || []);
+      
+      // Filter to only show eligible donors (last donation > 58 days ago or never donated)
+      const now = new Date();
+      const eligibleDonors = (data || []).filter((donor) => {
+        if (!donor.last_donation_date) return true; // Never donated = eligible
+        
+        const lastDonation = new Date(donor.last_donation_date);
+        const daysSince = Math.floor((now.getTime() - lastDonation.getTime()) / (1000 * 60 * 60 * 24));
+        return daysSince > 58; // Only eligible if more than 58 days since last donation
+      });
+      
+      setDonors(eligibleDonors);
     } catch (err) {
       console.error('Error fetching donors:', err);
     } finally {
@@ -190,6 +202,16 @@ export default function HospitalAddDonationPage() {
                   </label>
                   {loadingDonors ? (
                     <div className="text-gray-500 text-sm">Loading donors...</div>
+                  ) : donors.length === 0 ? (
+                    <div className="bg-yellow-50 border-2 border-yellow-200 rounded-lg p-4">
+                      <div className="flex items-start gap-2">
+                        <span className="text-xl">⚠️</span>
+                        <div className="text-sm text-yellow-800">
+                          <p className="font-semibold mb-1">No Eligible Donors</p>
+                          <p>All donors have donated recently (within the last 58 days) or there are no donors registered. Please wait or add a new donor.</p>
+                        </div>
+                      </div>
+                    </div>
                   ) : (
                     <select
                       name="donor_id"
